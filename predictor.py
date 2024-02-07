@@ -8,8 +8,6 @@ sklearn.set_config(transform_output="pandas")
 model = joblib.load("catboost.pkl")
 pipeline = joblib.load("pipeline.pkl")
 
-# Load data
-df = pd.read_csv("../aux/heart.csv")
 
 # Set page title and description
 st.set_page_config(page_title="Heart Disease Prediction", page_icon="❤️", layout="wide")
