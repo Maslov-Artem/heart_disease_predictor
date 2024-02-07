@@ -5,7 +5,7 @@ import streamlit as st
 
 sklearn.set_config(transform_output="pandas")
 
-model = joblib.load("catboost.pkl")
+model = joblib.load("voting.pkl")
 pipeline = joblib.load("pipeline.pkl")
 
 
@@ -23,15 +23,15 @@ with st.sidebar:
     sex_options = {"Male": "M", "Female": "F"}
     sex = st.radio("Sex:", options=list(sex_options.keys()))
 
-    age = st.number_input("Age", min_value=0, step=1)
+    age = st.number_input("Age", min_value=0, step=1, value=None)
 
     st.subheader("Health Metrics")
-    resting_bp = st.number_input("Resting Blood Pressure (mm Hg)", step=0.1)
-    cholesterol = st.number_input("Serum Cholesterol (mm/dl)")
+    resting_bp = st.number_input("Resting Blood Pressure (mm Hg)", step=0.1, value=None)
+    cholesterol = st.number_input("Serum Cholesterol (mm/dl)", step=1, value=None)
 
-    max_hr = st.number_input("Maximum Heart Rate Achieved", step=1)
+    max_hr = st.number_input("Maximum Heart Rate Achieved", step=1, value=None)
     oldpeak = st.number_input(
-        "ST Depression induced by exercise relative to rest", step=0.1
+        "ST Depression induced by exercise relative to rest", step=0.1, value=None
     )
 
     st.subheader("Medical History")
@@ -85,15 +85,17 @@ button = st.button("Predict")
 
 # Prediction logic
 if button:
-    data_transformed = pipeline.transform(data)
-    prediction = model.predict(data_transformed)
-    prediction_proba = model.predict_proba(data_transformed)
+    try:
+        data_transformed = pipeline.transform(data)
+        prediction = model.predict(data_transformed)
 
-    if prediction == 1:
-        st.error("You have a heart disease 💔")
-        st.image(
-            "deadge.png",
-        )
-    else:
-        st.success("You don't have a heart disease ❤️")
-        st.image("healthy.png")
+        if prediction == 1:
+            st.error("You have a heart disease 💔")
+            st.image(
+                "deadge.png",
+            )
+        else:
+            st.success("You don't have a heart disease ❤️")
+            st.image("healthy.png")
+    except ValueError:
+        st.write("Fill all fields on a side bar first.")
